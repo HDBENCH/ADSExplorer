@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="ja-JP" Language="1041"
+                 xmlns="http://wixtoolset.org/schemas/v4/wxl">
+
+  <String Id="LangId" Value="1041" Overridable="yes" />
+  <String Id="Codepage" Value="65001" Overridable="yes" />
+
+  <String Id="ProductName" Value="ADS Explorer" />
+  <String Id="Manufacturer" Value="HDBENCH.NET" />
+  <String Id="InstallFolderName" Value="ADS Explorer" />
+  <String Id="LicenseRtf" Value="License.ja.rtf" />
+
+  <String Id="PackageDescription"
+          Value="ADS Explorer - NTFS 代替データストリーム (ADS) 表示シェル拡張" />
+
+  <String Id="FeatureMainTitle" Value="ADS Explorer シェル拡張" />
+  <String Id="FeatureMainDescription"
+          Value="代替データストリームを持つファイルにオーバーレイアイコンを表示し、右クリックメニューに「ADS を表示」を追加します。" />
+
+  <String Id="DowngradeError"
+          Value="より新しいバージョンの ADS Explorer が既にインストールされています。セットアップを終了します。" />
+
+  <String Id="Launch64BitOnly"
+          Value="ADS Explorer は 64 ビット版 Windows が必要です。32 ビット環境ではインストールできません。" />
+  <String Id="LaunchOsTooOld"
+          Value="ADS Explorer は Windows 8.1 以降が必要です (Windows 10 / 11 を推奨)。" />
+
+</WixLocalization>

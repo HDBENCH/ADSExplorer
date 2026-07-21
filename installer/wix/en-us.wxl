@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="en-US" Language="1033"
+                 xmlns="http://wixtoolset.org/schemas/v4/wxl">
+
+  <String Id="LangId" Value="1033" Overridable="yes" />
+  <String Id="Codepage" Value="65001" Overridable="yes" />
+
+  <String Id="ProductName" Value="ADS Explorer" />
+  <String Id="Manufacturer" Value="HDBENCH.NET" />
+  <String Id="InstallFolderName" Value="ADS Explorer" />
+  <String Id="LicenseRtf" Value="License.en.rtf" />
+
+  <String Id="PackageDescription"
+          Value="ADS Explorer - NTFS Alternate Data Streams viewer shell extension" />
+
+  <String Id="FeatureMainTitle" Value="ADS Explorer shell extension" />
+  <String Id="FeatureMainDescription"
+          Value="Explorer overlay icon and &quot;Show ADS&quot; context menu for files with alternate data streams." />
+
+  <String Id="DowngradeError"
+          Value="A newer version of ADS Explorer is already installed. Setup will now exit." />
+
+  <String Id="Launch64BitOnly"
+          Value="ADS Explorer requires 64-bit Windows. This installer cannot continue on a 32-bit system." />
+  <String Id="LaunchOsTooOld"
+          Value="ADS Explorer requires Windows 8.1 or later (Windows 10/11 recommended)." />
+
+</WixLocalization>

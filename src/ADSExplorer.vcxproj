@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>18.0</VCProjectVersion>
+    <ProjectGuid>{B7E2F3A1-9C4D-4E5F-A6B8-1D2C3E4F5A6B}</ProjectGuid>
+    <RootNamespace>ADSExplorer</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <PropertyGroup>
+    <OutDir>$(ProjectDir)..\build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\build\obj\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>ADSExplorer</TargetName>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;UNICODE;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <ModuleDefinitionFile>ADSExplorer.def</ModuleDefinitionFile>
+      <AdditionalDependencies>uuid.lib;ole32.lib;shell32.lib;shlwapi.lib;comctl32.lib;advapi32.lib;user32.lib;gdi32.lib;kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;UNICODE;_UNICODE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <ModuleDefinitionFile>ADSExplorer.def</ModuleDefinitionFile>
+      <AdditionalDependencies>uuid.lib;ole32.lib;shell32.lib;shlwapi.lib;comctl32.lib;advapi32.lib;user32.lib;gdi32.lib;kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="AdsUtil.cpp" />
+    <ClCompile Include="ClassFactory.cpp" />
+    <ClCompile Include="ContextMenu.cpp" />
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Guids.cpp" />
+    <ClCompile Include="IconOverlay.cpp" />
+    <ClCompile Include="Lang.cpp" />
+    <ClCompile Include="Reg.cpp" />
+    <ClCompile Include="StreamDialog.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AdsUtil.h" />
+    <ClInclude Include="ClassFactory.h" />
+    <ClInclude Include="ContextMenu.h" />
+    <ClInclude Include="DllShared.h" />
+    <ClInclude Include="Guids.h" />
+    <ClInclude Include="IconOverlay.h" />
+    <ClInclude Include="Lang.h" />
+    <ClInclude Include="Reg.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="StreamDialog.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ADSExplorer.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ADSExplorer.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\overlay.ico" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <!-- ================================================================
+       After a Release|x64 build, produce dist\ADSExplorer-&lt;ver&gt;.msi.
+         * Disable with BuildMsi=false (e.g. msbuild /p:BuildMsi=false)
+         * If WiX v6 (the dotnet tool) is missing, warn and skip so the
+           DLL build itself still succeeds
+       ================================================================ -->
+  <PropertyGroup>
+    <BuildMsi Condition="'$(BuildMsi)'==''">true</BuildMsi>
+    <!-- MsiVersion is an override only. Left empty, build-msi.ps1 reads
+         PRODUCTVERSION out of ADSExplorer.rc, which is the single source of
+         truth for the version number. -->
+    <MsiVersionArg Condition="'$(MsiVersion)'!=''">-Version $(MsiVersion)</MsiVersionArg>
+    <WixExe Condition="'$(WixExe)'==''">$(UserProfile)\.dotnet\tools\wix.exe</WixExe>
+    <RepoRoot>$(ProjectDir)..\</RepoRoot>
+  </PropertyGroup>
+  <!-- Inputs/Outputs are evaluated before the target runs, so this ItemGroup
+       has to live outside it. Declared inside, it would evaluate to empty
+       and the target would rebuild every time. -->
+  <ItemGroup>
+    <MsiSource Include="$(RepoRoot)installer\wix\*.wxs;$(RepoRoot)installer\wix\*.wxl;$(RepoRoot)installer\wix\*.txt;$(RepoRoot)installer\*.txt;$(RepoRoot)installer\*.bat;$(RepoRoot)installer\manual\*.txt" />
+  </ItemGroup>
+  <!-- The real outputs carry the version in their file names, which MSBuild
+       cannot know before running the script. The script therefore writes a
+       fixed-name stamp file that drives the up-to-date check instead. -->
+  <Target Name="BuildMsiPackage" AfterTargets="Build"
+          Condition="'$(BuildMsi)'=='true' AND '$(Configuration)'=='Release' AND '$(Platform)'=='x64'"
+          Inputs="$(OutDir)ADSExplorer.dll;$(RepoRoot)src\ADSExplorer.rc;$(RepoRoot)tools\build-msi.ps1;@(MsiSource)"
+          Outputs="$(RepoRoot)dist\.build-stamp">
+    <Warning Condition="!Exists('$(WixExe)')"
+             Text="WiX v6 not found, skipping MSI generation ($(WixExe)). To install: dotnet tool install --global wix --version 6.* &amp;&amp; wix extension add -g WixToolset.UI.wixext/6.0.2" />
+    <Exec Condition="Exists('$(WixExe)')"
+          Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(RepoRoot)tools\build-msi.ps1&quot; $(MsiVersionArg)"
+          WorkingDirectory="$(RepoRoot)" />
+  </Target>
+</Project>

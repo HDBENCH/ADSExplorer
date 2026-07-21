@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ADS Explorer - MSI package definition (WiX v6)
+
+  * Registry entries are authored declaratively rather than delegating to
+    regsvr32 / DllRegisterServer, so Windows Installer fully owns rollback,
+    repair and uninstall. The entries mirror src/Reg.cpp.
+  * UI strings live in en-us.wxl / ja-jp.wxl and are selected at build time
+    with -culture. tools/build-msi.ps1 builds both and embeds the Japanese
+    one into a single MSI as a language transform.
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+  <!-- Keep these in sync with the CLSIDs in src/Guids.h -->
+  <?define OverlayClsid = "{8F2A6C31-4B7D-4E9A-A1F3-2C6E8D5B0A47}" ?>
+  <?define CtxMenuClsid = "{C4E1D9B2-7A38-4F6C-9E52-1B0D3A8F6C29}" ?>
+
+  <!-- Registry key name for the icon overlay. The two leading spaces sort it
+       early, which matters because Windows loads only the first 15 overlay
+       handlers. Same value as OVERLAY_REG_KEY in Reg.cpp. -->
+  <?define OverlayRegKey = "SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ShellIconOverlayIdentifiers\  ADSExplorer" ?>
+  <?define ApprovedRegKey = "SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Approved" ?>
+
+  <Package
+      Name="!(loc.ProductName)"
+      Manufacturer="!(loc.Manufacturer)"
+      Version="$(Version)"
+      ProductCode="$(ProductCode)"
+      UpgradeCode="{19031AEB-8262-4FAD-93C4-46C6F831757F}"
+      Language="!(loc.LangId)"
+      Codepage="!(loc.Codepage)"
+      InstallerVersion="500"
+      Scope="perMachine"
+      Compressed="yes">
+
+    <SummaryInformation
+        Description="!(loc.PackageDescription)"
+        Manufacturer="!(loc.Manufacturer)" />
+
+    <!-- x64 only. Stop with an explicit message on 32-bit Windows. -->
+    <Launch Condition="VersionNT64"
+            Message="!(loc.Launch64BitOnly)" />
+    <!-- Windows 8.1 (6.3) or later -->
+    <Launch Condition="Installed OR (VersionNT &gt;= 603)"
+            Message="!(loc.LaunchOsTooOld)" />
+
+    <MajorUpgrade
+        AllowSameVersionUpgrades="yes"
+        DowngradeErrorMessage="!(loc.DowngradeError)" />
+
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <!-- Information shown in "Installed apps" / "Programs and Features" -->
+    <Property Id="ARPPRODUCTICON" Value="ADSExplorerIcon.ico" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/HDBENCH/ADSExplorer" />
+    <Property Id="ARPURLINFOABOUT" Value="https://github.com/HDBENCH/ADSExplorer" />
+    <Property Id="ARPNOREPAIR" Value="0" />
+    <Icon Id="ADSExplorerIcon.ico" SourceFile="$(IconFile)" />
+
+    <!-- ============================================================
+         Never stop Explorer; require a reboot instead.
+
+         ADSExplorer.dll is loaded into explorer.exe, so the file is locked
+         whenever it has to be replaced or removed. By default Windows
+         Installer asks the Restart Manager to shut explorer.exe down, but
+         shutting down the shell itself usually fails and leaves the user
+         staring at a "could not be stopped" dialog they cannot act on.
+
+         So: disable the Restart Manager, let locked files fall through to
+         the "replace / delete on reboot" path, and always ask for a
+         restart at the end. Overlay handlers are only read when Explorer
+         starts, so a restart is needed either way.
+         ============================================================ -->
+    <Property Id="MSIRESTARTMANAGERCONTROL" Value="Disable" />
+
+    <!-- Always request a restart at the end of install and uninstall.
+         With UI this shows the "restart now?" prompt; under /qn it becomes
+         exit code 3010 (ERROR_SUCCESS_REBOOT_REQUIRED). Unattended
+         deployments can suppress it with REBOOT=ReallySuppress. -->
+    <Property Id="REBOOT" Value="Force" />
+
+    <Feature Id="Main" Title="!(loc.FeatureMainTitle)" Level="1"
+             Description="!(loc.FeatureMainDescription)" AllowAbsent="no">
+      <ComponentGroupRef Id="ShellExtensionComponents" />
+    </Feature>
+
+    <ui:WixUI Id="WixUI_Minimal" />
+    <WixVariable Id="WixUILicenseRtf" Value="!(loc.LicenseRtf)" />
+
+  </Package>
+
+  <Fragment>
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="!(loc.InstallFolderName)" />
+    </StandardDirectory>
+
+    <ComponentGroup Id="ShellExtensionComponents" Directory="INSTALLFOLDER">
+
+      <!-- The DLL itself, plus its COM server registration -->
+      <Component Id="cmp_ADSExplorerDll" Bitness="always64"
+                 Guid="{2B0AA1D6-5B3F-4E27-9A0C-6E8A5C4D7F31}">
+        <File Id="fil_ADSExplorerDll"
+              Name="ADSExplorer.dll"
+              Source="$(BinDir)\ADSExplorer.dll"
+              KeyPath="yes" />
+
+        <!-- CLSID: icon overlay handler -->
+        <RegistryKey Root="HKCR" Key="CLSID\$(OverlayClsid)"
+                     ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
+          <RegistryValue Type="string" Value="ADS Explorer Icon Overlay Handler" />
+          <RegistryKey Key="InprocServer32">
+            <RegistryValue Type="string" Value="[#fil_ADSExplorerDll]" />
+            <RegistryValue Type="string" Name="ThreadingModel" Value="Apartment" />
+          </RegistryKey>
+        </RegistryKey>
+
+        <!-- CLSID: context menu handler -->
+        <RegistryKey Root="HKCR" Key="CLSID\$(CtxMenuClsid)"
+                     ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
+          <RegistryValue Type="string" Value="ADS Explorer Context Menu Handler" />
+          <RegistryKey Key="InprocServer32">
+            <RegistryValue Type="string" Value="[#fil_ADSExplorerDll]" />
+            <RegistryValue Type="string" Name="ThreadingModel" Value="Apartment" />
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+
+      <!-- Icon overlay registration (HKLM) -->
+      <Component Id="cmp_OverlayRegistration" Bitness="always64"
+                 Guid="{7C4E9B85-0D12-49F6-8B3A-4F5E2D9C1A08}">
+        <RegistryKey Root="HKLM" Key="$(OverlayRegKey)"
+                     ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
+          <RegistryValue Type="string" Value="$(OverlayClsid)" KeyPath="yes" />
+        </RegistryKey>
+      </Component>
+
+      <!-- Context menu registration (all files + folders) -->
+      <Component Id="cmp_ContextMenuRegistration" Bitness="always64"
+                 Guid="{5A6D3C08-91B7-4E44-A2F9-3C7B8E0D6F52}">
+        <RegistryKey Root="HKCR" Key="*\shellex\ContextMenuHandlers\ADSExplorer"
+                     ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
+          <RegistryValue Type="string" Value="$(CtxMenuClsid)" />
+        </RegistryKey>
+        <RegistryKey Root="HKCR" Key="Directory\shellex\ContextMenuHandlers\ADSExplorer"
+                     ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
+          <RegistryValue Type="string" Value="$(CtxMenuClsid)" />
+        </RegistryKey>
+      </Component>
+
+      <!-- Approved shell extensions list -->
+      <Component Id="cmp_ApprovedShellExtensions" Bitness="always64"
+                 Guid="{E1F4A72B-6C93-4D18-B50E-8A2D7F3C9B64}">
+        <RegistryValue Root="HKLM" Key="$(ApprovedRegKey)"
+                       Name="$(OverlayClsid)" Type="string"
+                       Value="ADS Explorer Icon Overlay Handler" KeyPath="yes" />
+        <RegistryValue Root="HKLM" Key="$(ApprovedRegKey)"
+                       Name="$(CtxMenuClsid)" Type="string"
+                       Value="ADS Explorer Context Menu Handler" />
+      </Component>
+
+      <!-- Bundled documentation -->
+      <Component Id="cmp_Docs" Bitness="always64"
+                 Guid="{9D3B8E51-2A46-4C7F-8E10-5B9C4A2D6E73}">
+        <File Id="fil_ReadmeEn" Name="README.txt"
+              Source="$(DocDir)\readme_en.txt" KeyPath="yes" />
+        <!-- Stored under an ASCII name (readme_jp.txt) in the repository;
+             only the installed file name is Japanese. -->
+        <File Id="fil_ReadmeJa" Name="使い方.txt"
+              Source="$(DocDir)\readme_jp.txt" />
+      </Component>
+
+    </ComponentGroup>
+  </Fragment>
+</Wix>

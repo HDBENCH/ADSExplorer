@@ -1,0 +1,26 @@
+# Detect text automatically and store it with LF inside the repository
+* text=auto
+
+# Windows-only files, and files whose line endings matter, are pinned to CRLF
+*.bat        text eol=crlf
+*.cmd        text eol=crlf
+*.ps1        text eol=crlf
+*.sln        text eol=crlf
+*.vcxproj    text eol=crlf
+*.filters    text eol=crlf
+*.rc         text eol=crlf
+*.def        text eol=crlf
+*.wxs        text eol=crlf
+*.wxl        text eol=crlf
+
+# Scripts executed through bash must use LF
+*.sh         text eol=lf
+
+# Binary: never line-ending converted, never merged
+*.ico        binary
+*.msi        binary
+*.zip        binary
+*.dll        binary
+
+# GitHub language stats: keep installer assets out of the breakdown
+installer/** linguist-documentation

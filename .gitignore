@@ -1,0 +1,20 @@
+# Build output and distribution artifacts
+/build/
+/dist/
+
+# Visual Studio
+.vs/
+*.user
+*.aps
+*.suo
+*.VC.db
+*.VC.opendb
+
+# Generated intermediate and output files
+*.obj
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.dll
+*.tlog

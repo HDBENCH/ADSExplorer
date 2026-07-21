@@ -316,8 +316,8 @@ function Copy-DocFile([string] $src, [string] $dst, [bool] $withBom) {
     [System.IO.File]::WriteAllText($dst, $text, (New-Object System.Text.UTF8Encoding $withBom))
 }
 
-Copy-DocFile (Join-Path $DocDir 'readme_jp.txt') (Join-Path $DistDir '使い方.txt') $true
-Copy-DocFile (Join-Path $DocDir 'readme_en.txt') (Join-Path $DistDir 'README.txt') $false
+Copy-DocFile (Join-Path $DocDir 'readme_jp.txt') (Join-Path $DistDir 'readme_jp.txt') $true
+Copy-DocFile (Join-Path $DocDir 'readme_en.txt') (Join-Path $DistDir 'README.txt')    $false
 
 # --------------------------------------------- Build the manual-install zip --
 # The regsvr32-based install.bat / uninstall.bat plus the DLL and its own docs.
@@ -330,15 +330,14 @@ New-Item -ItemType Directory -Force -Path $ManualDir | Out-Null
 Copy-Item $Dll (Join-Path $ManualDir 'ADSExplorer.dll') -Force
 Copy-DocFile (Join-Path $DocDir 'install.bat')          (Join-Path $ManualDir 'install.bat')   $false
 Copy-DocFile (Join-Path $DocDir 'uninstall.bat')        (Join-Path $ManualDir 'uninstall.bat') $false
-Copy-DocFile (Join-Path $DocDir 'manual\readme_jp.txt') (Join-Path $ManualDir '使い方.txt')    $true
+Copy-DocFile (Join-Path $DocDir 'manual\readme_jp.txt') (Join-Path $ManualDir 'readme_jp.txt') $true
 Copy-DocFile (Join-Path $DocDir 'manual\readme_en.txt') (Join-Path $ManualDir 'README.txt')    $false
 
 $ManualZip = Join-Path $DistDir "ADSExplorer-$Version-manual.zip"
 Remove-Item $ManualZip -Force -ErrorAction SilentlyContinue
 Add-Type -AssemblyName System.IO.Compression.FileSystem
-# Use the overload that takes no entryNameEncoding: .NET then writes non-ASCII
-# entry names (使い方.txt) as UTF-8 with the language-encoding flag set, which
-# Explorer extracts correctly.
+# All entry names are ASCII, so entry-name encoding is not a concern here and
+# the overload without entryNameEncoding is fine.
 [System.IO.Compression.ZipFile]::CreateFromDirectory(
     $ManualDir, $ManualZip,
     [System.IO.Compression.CompressionLevel]::Optimal,
@@ -357,6 +356,6 @@ Write-Host ''
 Write-Host "Done: $DistDir" -ForegroundColor Green
 Write-Host "  ADSExplorer-$Version.msi         MSI installer (English + Japanese UI)"
 Write-Host "  ADSExplorer-$Version-manual.zip  manual install (regsvr32 + .bat)"
-Write-Host '  使い方.txt / README.txt          docs for the MSI edition'
+Write-Host '  readme_jp.txt / README.txt       docs for the MSI edition'
 Write-Host ''
 Write-Host '  To force the Japanese UI:  msiexec /i "ADSExplorer.msi" TRANSFORMS=":1041"'

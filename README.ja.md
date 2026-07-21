@@ -102,7 +102,7 @@ bash tools/package.sh
 |----------|------|
 | `ADSExplorer-<バージョン>.msi` | MSI インストーラー（英語 / 日本語 UI を内包）|
 | `ADSExplorer-<バージョン>-manual.zip` | 手動インストール版（`ADSExplorer.dll` + `install.bat` + `uninstall.bat` + 専用説明書）|
-| `使い方.txt` / `README.txt` | MSI 版の説明書 |
+| `readme_jp.txt` / `README.txt` | MSI 版の説明書 |
 
 MSI・zip ともファイル名にバージョンが入るため、別バージョンをビルドしても上書きされず並んで残ります。説明書はすべて CRLF、日本語のものは BOM 付き UTF-8 に整形済みです。組み立ては `tools\build-msi.ps1` に集約してあるので、Visual Studio の Release ビルドでも `bash tools/package.sh` でも `dist\` の内容は同じになります。
 
@@ -255,7 +255,7 @@ ADS/
 └── dist/                        配布用 (ビルド時に生成 / git 管理外)
     ├── ADSExplorer-1.0.0.msi
     ├── ADSExplorer-1.0.0-manual.zip
-    ├── 使い方.txt
+    ├── readme_jp.txt
     └── README.txt
 ```
 

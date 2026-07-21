@@ -102,7 +102,7 @@ What lands in `dist\`:
 |------|----------|
 | `ADSExplorer-<version>.msi` | MSI installer (English and Japanese UI in one package) |
 | `ADSExplorer-<version>-manual.zip` | Manual edition (`ADSExplorer.dll` + `install.bat` + `uninstall.bat` + its own docs) |
-| `使い方.txt` / `README.txt` | Docs for the MSI edition |
+| `readme_jp.txt` / `README.txt` | Docs for the MSI edition |
 
 Both archives carry the version in their file name, so builds of different versions accumulate side by side rather than overwriting each other. All text files use CRLF; the Japanese ones are UTF-8 with BOM. Assembly lives entirely in `tools\build-msi.ps1`, so a Visual Studio Release build and `bash tools/package.sh` produce identical `dist\` contents.
 
@@ -255,7 +255,7 @@ ADS/
 └── dist/                        Distribution (generated at build time / git-ignored)
     ├── ADSExplorer-1.0.0.msi
     ├── ADSExplorer-1.0.0-manual.zip
-    ├── 使い方.txt
+    ├── readme_jp.txt
     └── README.txt
 ```
 

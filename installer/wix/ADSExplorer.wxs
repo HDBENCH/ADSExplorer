@@ -164,9 +164,7 @@
                  Guid="{9D3B8E51-2A46-4C7F-8E10-5B9C4A2D6E73}">
         <File Id="fil_ReadmeEn" Name="README.txt"
               Source="$(DocDir)\readme_en.txt" KeyPath="yes" />
-        <!-- Stored under an ASCII name (readme_jp.txt) in the repository;
-             only the installed file name is Japanese. -->
-        <File Id="fil_ReadmeJa" Name="使い方.txt"
+        <File Id="fil_ReadmeJa" Name="readme_jp.txt"
               Source="$(DocDir)\readme_jp.txt" />
       </Component>
 

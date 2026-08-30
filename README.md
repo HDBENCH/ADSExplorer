@@ -73,12 +73,12 @@ powershell -ExecutionPolicy Bypass -File tools\build-msi.ps1
 The resulting MSI is **a single package containing both the English and Japanese UI** (the Japanese version is embedded as language transform `1041` and selected automatically from the Windows user locale). To force a language:
 
 ```bat
-msiexec /i ADSExplorer-1.0.0.msi TRANSFORMS=":1041"   :: force Japanese UI
+msiexec /i ADSExplorer-<version>.msi TRANSFORMS=":1041"   :: force Japanese UI
 ```
 
 ### 3. Install
 
-Double-click `ADSExplorer-1.0.0.msi` and follow the wizard (you will be prompted to elevate). For an unattended install: `msiexec /i ADSExplorer-1.0.0.msi /qn`.
+Double-click `ADSExplorer-<version>.msi` and follow the wizard (you will be prompted to elevate). For an unattended install: `msiexec /i ADSExplorer-<version>.msi /qn`.
 
 The DLL is placed in `%ProgramFiles%\ADS Explorer\` and the shell-extension registry entries are **written declaratively by the MSI** (no `regsvr32` involved).
 
@@ -154,7 +154,7 @@ Files downloaded from the internet automatically get a `Zone.Identifier` ADS (zo
 
 ## Uninstall
 
-Settings -> Apps -> Installed apps -> **ADS Explorer** -> Uninstall. From a command line: `msiexec /x ADSExplorer-1.0.0.msi /qn`.
+Settings -> Apps -> Installed apps -> **ADS Explorer** -> Uninstall. From a command line: `msiexec /x ADSExplorer-<version>.msi /qn`.
 
 Every file and registry entry is under Windows Installer control, so nothing is left behind.
 
@@ -253,8 +253,8 @@ ADS/
 │   ├── readme_jp.txt            MSI edition (Japanese)
 │   └── readme_en.txt            MSI edition (English)
 └── dist/                        Distribution (generated at build time / git-ignored)
-    ├── ADSExplorer-1.0.0.msi
-    ├── ADSExplorer-1.0.0-manual.zip
+    ├── ADSExplorer-<version>.msi
+    ├── ADSExplorer-<version>-manual.zip
     ├── readme_jp.txt
     └── README.txt
 ```

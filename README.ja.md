@@ -73,12 +73,12 @@ powershell -ExecutionPolicy Bypass -File tools\build-msi.ps1
 生成される MSI は **1 本で英語 UI と日本語 UI の両方を内包**します（日本語版は言語トランスフォーム `1041` として MSI に埋め込まれ、Windows のユーザーロケールに応じて自動選択されます）。言語を明示するには:
 
 ```bat
-msiexec /i ADSExplorer-1.0.0.msi TRANSFORMS=":1041"   :: 日本語 UI を強制
+msiexec /i ADSExplorer-<バージョン>.msi TRANSFORMS=":1041"   :: 日本語 UI を強制
 ```
 
 ### 3. インストール
 
-`ADSExplorer-1.0.0.msi` をダブルクリックし、ウィザードに従います（管理者への昇格を求められます）。無人インストールは `msiexec /i ADSExplorer-1.0.0.msi /qn`。
+`ADSExplorer-<バージョン>.msi` をダブルクリックし、ウィザードに従います（管理者への昇格を求められます）。無人インストールは `msiexec /i ADSExplorer-<バージョン>.msi /qn`。
 
 DLL は `%ProgramFiles%\ADS Explorer\` に配置され、シェル拡張のレジストリ登録は **MSI が宣言的に行います**（`regsvr32` は不要）。
 
@@ -154,7 +154,7 @@ dir /r
 
 ## アンインストール
 
-「設定」→「アプリ」→「インストールされているアプリ」から **ADS Explorer** をアンインストールしてください。コマンドラインからは `msiexec /x ADSExplorer-1.0.0.msi /qn`。
+「設定」→「アプリ」→「インストールされているアプリ」から **ADS Explorer** をアンインストールしてください。コマンドラインからは `msiexec /x ADSExplorer-<バージョン>.msi /qn`。
 
 ファイル・レジストリ登録はすべて Windows Installer の管理下にあるため、痕跡を残さず削除されます。
 
@@ -253,8 +253,8 @@ ADS/
 │   ├── readme_jp.txt            MSI 版 (日本語)
 │   └── readme_en.txt            MSI 版 (English)
 └── dist/                        配布用 (ビルド時に生成 / git 管理外)
-    ├── ADSExplorer-1.0.0.msi
-    ├── ADSExplorer-1.0.0-manual.zip
+    ├── ADSExplorer-<バージョン>.msi
+    ├── ADSExplorer-<バージョン>-manual.zip
     ├── readme_jp.txt
     └── README.txt
 ```

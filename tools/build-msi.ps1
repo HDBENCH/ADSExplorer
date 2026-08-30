@@ -310,8 +310,13 @@ Copy-Item $MsiEn $Final -Force
 # ------------------------------------------ Format the docs for Windows --
 # Use CRLF, and write the Japanese files as UTF-8 with BOM, so that opening
 # them in Notepad shows neither mojibake nor one long line.
+#
+# @VERSION@ is substituted with the version being built. The docs in the
+# repository carry the token rather than a number, so they cannot fall out of
+# step with the installer file names the way a hard-coded version does.
 function Copy-DocFile([string] $src, [string] $dst, [bool] $withBom) {
     $text = [System.IO.File]::ReadAllText($src, [System.Text.Encoding]::UTF8)
+    $text = $text.Replace('@VERSION@', $Version)
     $text = ($text -replace "`r`n", "`n") -replace "`n", "`r`n"
     [System.IO.File]::WriteAllText($dst, $text, (New-Object System.Text.UTF8Encoding $withBom))
 }

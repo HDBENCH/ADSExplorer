@@ -11,7 +11,7 @@ A Windows Explorer shell extension that reveals hidden
     selects several, Ctrl+A selects all.
 
 [Install]
-  Double-click ADSExplorer-1.0.0.msi and follow the wizard.
+  Double-click ADSExplorer-@VERSION@.msi and follow the wizard.
   (You will be prompted to elevate to administrator.)
   The setup UI is shown in Japanese or English automatically,
   matching your Windows display language.
@@ -20,7 +20,7 @@ A Windows Explorer shell extension that reveals hidden
   The overlay icons appear after that restart.
 
   Unattended install from a command line:
-    msiexec /i ADSExplorer-1.0.0.msi /qn
+    msiexec /i ADSExplorer-@VERSION@.msi /qn
   (returns exit code 3010 = restart required)
 
 [Uninstall]
@@ -28,7 +28,7 @@ A Windows Explorer shell extension that reveals hidden
   A restart is required here too: the DLL is in use by Explorer,
   so it is deleted on the next restart.
   Or from a command line:
-    msiexec /x ADSExplorer-1.0.0.msi /qn
+    msiexec /x ADSExplorer-@VERSION@.msi /qn
 
 [Requirements]
   - 64-bit Windows 10 / 11

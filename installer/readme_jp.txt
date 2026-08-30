@@ -10,7 +10,7 @@ ADS Explorer  -  NTFS 代替データストリーム(ADS)可視化ツール
     (Ctrl / Shift クリックで複数選択、Ctrl+A で全選択して一括削除)
 
 【インストール】
-  ADSExplorer-1.0.0.msi をダブルクリックし、画面の指示に従ってください。
+  ADSExplorer-@VERSION@.msi をダブルクリックし、画面の指示に従ってください。
   (管理者への昇格を求められます)
   インストーラーの表示言語は Windows の表示言語に合わせて自動で
   日本語/英語が選ばれます。
@@ -19,7 +19,7 @@ ADS Explorer  -  NTFS 代替データストリーム(ADS)可視化ツール
   オーバーレイアイコンは再起動後から表示されます。
 
   コマンドラインから無人インストールする場合:
-    msiexec /i ADSExplorer-1.0.0.msi /qn
+    msiexec /i ADSExplorer-@VERSION@.msi /qn
   (終了コード 3010 = 再起動が必要、を返します)
 
 【アンインストール】
@@ -28,7 +28,7 @@ ADS Explorer  -  NTFS 代替データストリーム(ADS)可視化ツール
   こちらも再起動を求められます。DLL はエクスプローラーが使用中のため、
   再起動時に削除されます。
   コマンドラインからは:
-    msiexec /x ADSExplorer-1.0.0.msi /qn
+    msiexec /x ADSExplorer-@VERSION@.msi /qn
 
 【動作環境】
   ・64bit 版 Windows 10 / 11

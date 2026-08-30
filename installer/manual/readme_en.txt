@@ -17,7 +17,7 @@ A Windows Explorer shell extension that reveals hidden
     - It does NOT appear in "Installed apps"
     - The DLL stays in the folder you extracted it to
 
-  The MSI package (ADSExplorer-x.y.z.msi) is recommended for
+  The MSI package (ADSExplorer-@VERSION@.msi) is recommended for
   normal use. Pick this edition if you cannot reboot, or want
   to run it temporarily from a USB stick.
 

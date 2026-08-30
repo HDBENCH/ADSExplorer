@@ -12,6 +12,7 @@
 
 #pragma comment(lib, "comctl32.lib")
 #pragma comment(lib, "shlwapi.lib")
+#pragma comment(lib, "version.lib")
 
 // File path + stream name behind one ListView row, used to identify what to delete
 struct RowRef {
@@ -232,6 +233,37 @@ static void DeleteSelected(HWND hDlg, DlgData* data) {
     }
 }
 
+// Read the product version out of this DLL's own VERSIONINFO resource rather
+// than hard-coding it here. src/ADSExplorer.rc stays the single source of
+// truth, so the dialog cannot drift from the installer file names the way a
+// literal would. Returns an empty string if the resource cannot be read.
+static std::wstring GetVersionLabel() {
+    wchar_t path[MAX_PATH];
+    if (GetModuleFileNameW(g_hModule, path, ARRAYSIZE(path)) == 0) return std::wstring();
+
+    DWORD ignored = 0;
+    DWORD size = GetFileVersionInfoSizeW(path, &ignored);
+    if (size == 0) return std::wstring();
+
+    std::vector<BYTE> data(size);
+    if (!GetFileVersionInfoW(path, 0, size, data.data())) return std::wstring();
+
+    VS_FIXEDFILEINFO* ffi = nullptr;
+    UINT len = 0;
+    if (!VerQueryValueW(data.data(), L"\\", reinterpret_cast<void**>(&ffi), &len) ||
+        !ffi || len < sizeof(VS_FIXEDFILEINFO)) {
+        return std::wstring();
+    }
+
+    // Show the first three fields, matching the version the installers use.
+    wchar_t buf[64];
+    StringCchPrintfW(buf, ARRAYSIZE(buf), L"ADS Explorer %u.%u.%u",
+                     HIWORD(ffi->dwProductVersionMS),
+                     LOWORD(ffi->dwProductVersionMS),
+                     HIWORD(ffi->dwProductVersionLS));
+    return buf;
+}
+
 static INT_PTR CALLBACK DlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
     case WM_INITDIALOG: {
@@ -247,6 +279,7 @@ static INT_PTR CALLBACK DlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
                  L"(Ctrl/Shift-click to select several, Ctrl+A for all):"));
         SetDlgItemTextW(hDlg, IDC_DELETE, LStr(L"選択した ADS を削除", L"Delete selected ADS"));
         SetDlgItemTextW(hDlg, IDOK, LStr(L"閉じる", L"Close"));
+        SetDlgItemTextW(hDlg, IDC_VERSION, GetVersionLabel().c_str());
 
         HWND lv = GetDlgItem(hDlg, IDC_STREAMLIST);
         ListView_SetExtendedListViewStyle(lv, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);

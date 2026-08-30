@@ -48,6 +48,63 @@ std::vector<AdsStream> AdsEnumStreams(PCWSTR path) {
     return streams;
 }
 
+// Convert a byte range with one code page. Returns empty on failure, which is
+// what MB_ERR_INVALID_CHARS turns invalid input into.
+static std::wstring ConvertBytes(UINT codePage, DWORD flags, const char* data, int len) {
+    if (len <= 0) return std::wstring();
+    int wlen = MultiByteToWideChar(codePage, flags, data, len, nullptr, 0);
+    if (wlen <= 0) return std::wstring();
+    std::wstring w(static_cast<size_t>(wlen), L'\0');
+    MultiByteToWideChar(codePage, flags, data, len, &w[0], wlen);
+    return w;
+}
+
+// Decode raw stream bytes for the preview.
+//
+// The encoding is whatever wrote the stream. Browsers tend to emit ASCII or
+// UTF-8, but Explorer and several download managers use the system ANSI code
+// page, so a Japanese path in Zone.Identifier's ReferrerUrl arrives as CP932.
+// A few tools write UTF-16 with a BOM.
+//
+// Sniff in that order rather than assuming UTF-8: decoding CP932 as UTF-8
+// turns every non-ASCII byte into U+FFFD and the path renders as a row of
+// replacement boxes.
+static std::wstring DecodeStreamBytes(const char* data, size_t len) {
+    if (len == 0) return std::wstring();
+    const unsigned char* u = reinterpret_cast<const unsigned char*>(data);
+
+    // --- Byte order marks ---
+    if (len >= 3 && u[0] == 0xEF && u[1] == 0xBB && u[2] == 0xBF) {
+        return ConvertBytes(CP_UTF8, 0, data + 3, static_cast<int>(len - 3));
+    }
+    if (len >= 2 && u[0] == 0xFF && u[1] == 0xFE) {
+        // UTF-16LE is already the native wide encoding
+        return std::wstring(reinterpret_cast<const wchar_t*>(data + 2), (len - 2) / 2);
+    }
+    if (len >= 2 && u[0] == 0xFE && u[1] == 0xFF) {
+        // UTF-16BE: swap each pair into native order
+        std::wstring w((len - 2) / 2, L'\0');
+        for (size_t i = 0; i < w.size(); ++i) {
+            w[i] = static_cast<wchar_t>((u[2 + i * 2] << 8) | u[3 + i * 2]);
+        }
+        return w;
+    }
+
+    // --- Strict UTF-8 ---
+    // MB_ERR_INVALID_CHARS makes the call fail on invalid input rather than
+    // silently substituting U+FFFD. The buffer holds only a prefix of the
+    // stream, so it can end mid-sequence; retry after dropping up to three
+    // trailing bytes before concluding this is not UTF-8.
+    for (size_t drop = 0; drop <= 3 && drop < len; ++drop) {
+        std::wstring w = ConvertBytes(CP_UTF8, MB_ERR_INVALID_CHARS,
+                                      data, static_cast<int>(len - drop));
+        if (!w.empty()) return w;
+    }
+
+    // --- System ANSI code page ---
+    return ConvertBytes(CP_ACP, 0, data, static_cast<int>(len));
+}
+
 std::wstring AdsReadStreamPreview(PCWSTR filePath, PCWSTR streamName, DWORD maxBytes) {
     // Open the stream through the "filepath:streamname" syntax
     std::wstring full = filePath;
@@ -65,17 +122,25 @@ std::wstring AdsReadStreamPreview(PCWSTR filePath, PCWSTR streamName, DWORD maxB
     CloseHandle(h);
     if (!ok || read == 0) return std::wstring();
 
-    // Zone.Identifier and friends are ASCII/UTF-8, so try UTF-8 first.
-    int wlen = MultiByteToWideChar(CP_UTF8, 0, buf.data(), static_cast<int>(read), nullptr, 0);
-    std::wstring text;
-    if (wlen > 0) {
-        text.resize(static_cast<size_t>(wlen));
-        MultiByteToWideChar(CP_UTF8, 0, buf.data(), static_cast<int>(read), &text[0], wlen);
-    }
+    std::wstring text = DecodeStreamBytes(buf.data(), read);
 
-    // Collapse newlines and tabs into spaces for the single-line preview
-    for (wchar_t& c : text) {
-        if (c == L'\r' || c == L'\n' || c == L'\t') c = L' ';
+    // Flatten to one line: control characters become spaces, runs of spaces
+    // collapse, and the result is trimmed. Zone.Identifier often ends in a NUL,
+    // and leaving one in place would truncate the text in the ListView.
+    std::wstring line;
+    line.reserve(text.size());
+    bool pendingSpace = false;
+    for (wchar_t c : text) {
+        if (c < L' ' || (c >= 0x7F && c <= 0x9F)) c = L' ';   // C0, DEL and C1
+        if (c == L' ') {
+            pendingSpace = !line.empty();
+            continue;
+        }
+        if (pendingSpace) {
+            line.push_back(L' ');
+            pendingSpace = false;
+        }
+        line.push_back(c);
     }
-    return text;
+    return line;
 }

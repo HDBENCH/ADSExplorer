@@ -3,6 +3,7 @@
 #include "Guids.h"
 #include "IconOverlay.h"
 #include "ContextMenu.h"
+#include "PropSheet.h"
 #include <new>
 
 CClassFactory::CClassFactory(REFCLSID clsid) : m_cRef(1), m_clsid(clsid) {
@@ -41,6 +42,8 @@ IFACEMETHODIMP CClassFactory::CreateInstance(IUnknown* pUnkOuter, REFIID riid, v
         pObj = static_cast<IShellIconOverlayIdentifier*>(new (std::nothrow) CIconOverlay());
     } else if (IsEqualCLSID(m_clsid, CLSID_AdsContextMenu)) {
         pObj = static_cast<IShellExtInit*>(new (std::nothrow) CContextMenu());
+    } else if (IsEqualCLSID(m_clsid, CLSID_AdsPropSheet)) {
+        pObj = static_cast<IShellExtInit*>(new (std::nothrow) CPropSheet());
     } else {
         return CLASS_E_CLASSNOTAVAILABLE;
     }

@@ -22,7 +22,9 @@
     <ClCompile Include="Guids.cpp"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="IconOverlay.cpp"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="Lang.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="PropSheet.cpp"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="Reg.cpp"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="Selection.cpp"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="StreamDialog.cpp"><Filter>Source Files</Filter></ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -33,8 +35,10 @@
     <ClInclude Include="Guids.h"><Filter>Header Files</Filter></ClInclude>
     <ClInclude Include="IconOverlay.h"><Filter>Header Files</Filter></ClInclude>
     <ClInclude Include="Lang.h"><Filter>Header Files</Filter></ClInclude>
+    <ClInclude Include="PropSheet.h"><Filter>Header Files</Filter></ClInclude>
     <ClInclude Include="Reg.h"><Filter>Header Files</Filter></ClInclude>
     <ClInclude Include="resource.h"><Filter>Header Files</Filter></ClInclude>
+    <ClInclude Include="Selection.h"><Filter>Header Files</Filter></ClInclude>
     <ClInclude Include="StreamDialog.h"><Filter>Header Files</Filter></ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -9,6 +9,11 @@ struct AdsStream {
     LONGLONG     size;   // Size in bytes
 };
 
+// True if the volume holding path supports named streams (NTFS, ReFS 3.5+,
+// and SMB shares backed by them). Also true when the volume cannot be queried,
+// so an unknown case errs on the side of showing the UI.
+bool AdsVolumeSupportsStreams(PCWSTR path);
+
 // Fast check for whether path carries at least one named stream.
 bool AdsFileHasStreams(PCWSTR path);
 

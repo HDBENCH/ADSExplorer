@@ -6,6 +6,7 @@ Windows エクスプローラー上で **NTFS の代替データストリーム 
 
 - 🏷️ **アイコンオーバーレイ** — ADS を持つファイルに紫のドクロアイコンを重ねて表示
 - 🖱️ **コンテキストメニュー** — 右クリック「ADS を表示」で、ストリーム名・サイズ・内容を一覧するダイアログを表示。**選んだストリームの削除**もできます
+- 🗂️ **プロパティのタブ** — ファイル／フォルダのプロパティに **「ADS」タブ**を追加し、同じ一覧と削除機能を表示
 - 🌐 **日本語 / 英語 自動切り替え** — Windows の表示言語に応じて UI を自動でローカライズ
 - 📦 **MSI インストーラー同梱** — 英語 / 日本語 UI を 1 本に内包（レジストリ登録は MSI が宣言的に管理）。再起動したくない場合向けに regsvr32 ベースの手動インストール版 zip も同梱
 
@@ -129,6 +130,10 @@ MSI・zip ともファイル名にバージョンが入るため、別バージ�
    - 一覧からストリームを選び **「選択した ADS を削除」** または **Delete キー** で削除できます（確認あり・**元に戻せません**）。ファイル本体は残り、選んだ名前付きストリームだけが消えます。
    - **Ctrl / Shift クリックで複数選択**、**Ctrl+A で全選択**して一括削除できます。一部が失敗しても残りの削除は続行し、最後に失敗した分をまとめて報告します。
    - 複数ファイルを選択して右クリックすると、まとめて一覧できます。
+3. 右クリック →**「プロパティ」** にも **「ADS」タブ** があり、同じ一覧と削除ボタンを使えます。
+   - ファイル 1 つのときは「ファイル」列を省略します。
+   - 削除は（確認のうえ）その場で実行されます。OK／適用ボタンを待ちません。
+   - FAT / exFAT などストリームを持てないドライブ上では、タブ自体を追加しません。
 
 > UI（メニュー・ダイアログ・確認メッセージ）は、Windows の表示言語が日本語なら日本語、それ以外は英語で自動表示されます。
 
@@ -162,12 +167,13 @@ dir /r
 
 ## 仕組み（技術詳細）
 
-2 つの COM シェル拡張を 1 つの DLL に実装しています。
+3 つの COM シェル拡張を 1 つの DLL に実装しています。
 
 | 機能 | 実装インターフェース | 登録先 |
 |------|----------------------|--------|
 | アイコンオーバーレイ | `IShellIconOverlayIdentifier` | `HKLM\...\Explorer\ShellIconOverlayIdentifiers` |
 | コンテキストメニュー | `IShellExtInit` + `IContextMenu` | `HKCR\*\shellex\ContextMenuHandlers`、`HKCR\Directory\shellex\...` |
+| プロパティのタブ | `IShellExtInit` + `IShellPropSheetExt` | `HKCR\*\shellex\PropertySheetHandlers`、`HKCR\Directory\shellex\...` |
 
 - ADS の検出には `FindFirstStreamW` / `FindNextStreamW` を使用し、既定ストリーム `::$DATA` 以外が存在すれば「ADS あり」と判定します。
 - ADS の削除は `DeleteFileW("ファイルパス:ストリーム名")` で行い、名前付きストリームだけを消去します（本体ファイルは残ります）。
@@ -194,7 +200,7 @@ HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ShellIconO
 
 ### 2. エクスプローラーのカラム（列）には表示できません
 
-任意のファイルにカスタム列を追加する旧 API `IColumnProvider` は **Windows Vista で廃止**され、Windows 10/11 では機能しません。現行の代替（プロパティハンドラー）は拡張子単位の登録が前提で「全ファイルに ADS 列」は技術的に不可能です。本プロジェクトではこの制約を踏まえ、**右クリック→一覧ダイアログ**でストリーム名・サイズ・内容を表示する方式を採用しています。
+任意のファイルにカスタム列を追加する旧 API `IColumnProvider` は **Windows Vista で廃止**され、Windows 10/11 では機能しません。現行の代替（プロパティハンドラー）は拡張子単位の登録が前提で「全ファイルに ADS 列」は技術的に不可能です。本プロジェクトではこの制約を踏まえ、**右クリック→一覧ダイアログ**と**プロパティの「ADS」タブ**でストリーム名・サイズ・内容を表示する方式を採用しています。
 
 ### 3. パフォーマンス
 
@@ -229,7 +235,9 @@ ADS/
 │   ├── ClassFactory.h / .cpp    IClassFactory
 │   ├── IconOverlay.h / .cpp     IShellIconOverlayIdentifier
 │   ├── ContextMenu.h / .cpp     IShellExtInit + IContextMenu
-│   ├── StreamDialog.h / .cpp    ADS 一覧・削除ダイアログ
+│   ├── PropSheet.h / .cpp       IShellExtInit + IShellPropSheetExt (「ADS」タブ)
+│   ├── Selection.h / .cpp       シェルのデータオブジェクトから選択パスを取得
+│   ├── StreamDialog.h / .cpp    ADS 一覧・削除 (ダイアログとタブで共用)
 │   ├── Lang.h / Lang.cpp        UI 言語判定 (日本語 / 英語)
 │   ├── Reg.h / .cpp             登録 / 解除
 │   ├── dllmain.cpp              DllMain と COM エントリポイント

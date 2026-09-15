@@ -2,7 +2,7 @@
 #include "DllShared.h"
 #include "StreamDialog.h"
 #include "Lang.h"
-#include <shellapi.h>   // DragQueryFile / HDROP
+#include "Selection.h"
 #include <strsafe.h>
 
 CContextMenu::CContextMenu() : m_cRef(1) { DllAddRef(); }
@@ -29,27 +29,7 @@ IFACEMETHODIMP_(ULONG) CContextMenu::Release() {
 }
 
 IFACEMETHODIMP CContextMenu::Initialize(PCIDLIST_ABSOLUTE, IDataObject* pdtobj, HKEY) {
-    m_files.clear();
-    if (!pdtobj) return E_INVALIDARG;
-
-    FORMATETC fe = { CF_HDROP, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
-    STGMEDIUM stg;
-    if (FAILED(pdtobj->GetData(&fe, &stg))) return E_INVALIDARG;
-
-    HDROP hDrop = static_cast<HDROP>(GlobalLock(stg.hGlobal));
-    if (hDrop) {
-        UINT count = DragQueryFileW(hDrop, 0xFFFFFFFF, nullptr, 0);
-        for (UINT i = 0; i < count; ++i) {
-            wchar_t path[MAX_PATH];
-            if (DragQueryFileW(hDrop, i, path, MAX_PATH)) {
-                m_files.emplace_back(path);
-            }
-        }
-        GlobalUnlock(stg.hGlobal);
-    }
-    ReleaseStgMedium(&stg);
-
-    return m_files.empty() ? E_INVALIDARG : S_OK;
+    return GetSelectedPaths(pdtobj, m_files);
 }
 
 IFACEMETHODIMP CContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags) {

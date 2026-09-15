@@ -11,7 +11,13 @@ DEFINE_GUID(CLSID_AdsIconOverlay,
 DEFINE_GUID(CLSID_AdsContextMenu,
     0xc4e1d9b2, 0x7a38, 0x4f6c, 0x9e, 0x52, 0x1b, 0x0d, 0x3a, 0x8f, 0x6c, 0x29);
 
+// CLSID of the ADS Explorer property sheet handler ("ADS" tab)
+// {4E463087-E9CA-4644-81CC-85168F97269B}
+DEFINE_GUID(CLSID_AdsPropSheet,
+    0x4e463087, 0xe9ca, 0x4644, 0x81, 0xcc, 0x85, 0x16, 0x8f, 0x97, 0x26, 0x9b);
+
 // String forms used for registry entries. Keep these in sync with the
 // GUIDs above and with installer/wix/ADSExplorer.wxs.
-#define OVERLAY_GUID_STR  L"{8F2A6C31-4B7D-4E9A-A1F3-2C6E8D5B0A47}"
-#define CTXMENU_GUID_STR  L"{C4E1D9B2-7A38-4F6C-9E52-1B0D3A8F6C29}"
+#define OVERLAY_GUID_STR   L"{8F2A6C31-4B7D-4E9A-A1F3-2C6E8D5B0A47}"
+#define CTXMENU_GUID_STR   L"{C4E1D9B2-7A38-4F6C-9E52-1B0D3A8F6C29}"
+#define PROPSHEET_GUID_STR L"{4E463087-E9CA-4644-81CC-85168F97269B}"

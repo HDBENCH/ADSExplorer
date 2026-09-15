@@ -15,6 +15,7 @@
   <!-- Keep these in sync with the CLSIDs in src/Guids.h -->
   <?define OverlayClsid = "{8F2A6C31-4B7D-4E9A-A1F3-2C6E8D5B0A47}" ?>
   <?define CtxMenuClsid = "{C4E1D9B2-7A38-4F6C-9E52-1B0D3A8F6C29}" ?>
+  <?define PropSheetClsid = "{4E463087-E9CA-4644-81CC-85168F97269B}" ?>
 
   <!-- Registry key name for the icon overlay. The two leading spaces sort it
        early, which matters because Windows loads only the first 15 overlay
@@ -124,6 +125,16 @@
             <RegistryValue Type="string" Name="ThreadingModel" Value="Apartment" />
           </RegistryKey>
         </RegistryKey>
+
+        <!-- CLSID: property sheet handler -->
+        <RegistryKey Root="HKCR" Key="CLSID\$(PropSheetClsid)"
+                     ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
+          <RegistryValue Type="string" Value="ADS Explorer Property Sheet Handler" />
+          <RegistryKey Key="InprocServer32">
+            <RegistryValue Type="string" Value="[#fil_ADSExplorerDll]" />
+            <RegistryValue Type="string" Name="ThreadingModel" Value="Apartment" />
+          </RegistryKey>
+        </RegistryKey>
       </Component>
 
       <!-- Icon overlay registration (HKLM) -->
@@ -148,6 +159,19 @@
         </RegistryKey>
       </Component>
 
+      <!-- Property sheet registration (all files + folders) -->
+      <Component Id="cmp_PropertySheetRegistration" Bitness="always64"
+                 Guid="{927747B7-90D5-4926-A652-26C2F691619F}">
+        <RegistryKey Root="HKCR" Key="*\shellex\PropertySheetHandlers\ADSExplorer"
+                     ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
+          <RegistryValue Type="string" Value="$(PropSheetClsid)" />
+        </RegistryKey>
+        <RegistryKey Root="HKCR" Key="Directory\shellex\PropertySheetHandlers\ADSExplorer"
+                     ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
+          <RegistryValue Type="string" Value="$(PropSheetClsid)" />
+        </RegistryKey>
+      </Component>
+
       <!-- Approved shell extensions list -->
       <Component Id="cmp_ApprovedShellExtensions" Bitness="always64"
                  Guid="{E1F4A72B-6C93-4D18-B50E-8A2D7F3C9B64}">
@@ -157,6 +181,9 @@
         <RegistryValue Root="HKLM" Key="$(ApprovedRegKey)"
                        Name="$(CtxMenuClsid)" Type="string"
                        Value="ADS Explorer Context Menu Handler" />
+        <RegistryValue Root="HKLM" Key="$(ApprovedRegKey)"
+                       Name="$(PropSheetClsid)" Type="string"
+                       Value="ADS Explorer Property Sheet Handler" />
       </Component>
 
       <!-- Bundled documentation -->

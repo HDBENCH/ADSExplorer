@@ -85,7 +85,9 @@
     <ClCompile Include="Guids.cpp" />
     <ClCompile Include="IconOverlay.cpp" />
     <ClCompile Include="Lang.cpp" />
+    <ClCompile Include="PropSheet.cpp" />
     <ClCompile Include="Reg.cpp" />
+    <ClCompile Include="Selection.cpp" />
     <ClCompile Include="StreamDialog.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -96,8 +98,10 @@
     <ClInclude Include="Guids.h" />
     <ClInclude Include="IconOverlay.h" />
     <ClInclude Include="Lang.h" />
+    <ClInclude Include="PropSheet.h" />
     <ClInclude Include="Reg.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Selection.h" />
     <ClInclude Include="StreamDialog.h" />
   </ItemGroup>
   <ItemGroup>

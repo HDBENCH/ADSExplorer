@@ -47,6 +47,13 @@ HRESULT RegisterServer() {
     r |= SetString(HKEY_CLASSES_ROOT, L"CLSID\\" CTXMENU_GUID_STR L"\\InprocServer32",
                    L"ThreadingModel", L"Apartment");
 
+    // --- CLSID: property sheet handler ---
+    r |= SetString(HKEY_CLASSES_ROOT, L"CLSID\\" PROPSHEET_GUID_STR, nullptr,
+                   L"ADS Explorer Property Sheet Handler");
+    r |= SetString(HKEY_CLASSES_ROOT, L"CLSID\\" PROPSHEET_GUID_STR L"\\InprocServer32", nullptr, dll);
+    r |= SetString(HKEY_CLASSES_ROOT, L"CLSID\\" PROPSHEET_GUID_STR L"\\InprocServer32",
+                   L"ThreadingModel", L"Apartment");
+
     // --- Icon overlay registration (HKLM) ---
     r |= SetString(HKEY_LOCAL_MACHINE, OVERLAY_REG_KEY, nullptr, OVERLAY_GUID_STR);
 
@@ -56,11 +63,19 @@ HRESULT RegisterServer() {
     r |= SetString(HKEY_CLASSES_ROOT, L"Directory\\shellex\\ContextMenuHandlers\\ADSExplorer",
                    nullptr, CTXMENU_GUID_STR);
 
+    // --- Property sheet registration (all files + folders) ---
+    r |= SetString(HKEY_CLASSES_ROOT, L"*\\shellex\\PropertySheetHandlers\\ADSExplorer",
+                   nullptr, PROPSHEET_GUID_STR);
+    r |= SetString(HKEY_CLASSES_ROOT, L"Directory\\shellex\\PropertySheetHandlers\\ADSExplorer",
+                   nullptr, PROPSHEET_GUID_STR);
+
     // --- Approved shell extensions list ---
     r |= SetString(HKEY_LOCAL_MACHINE, APPROVED_KEY, OVERLAY_GUID_STR,
                    L"ADS Explorer Icon Overlay Handler");
     r |= SetString(HKEY_LOCAL_MACHINE, APPROVED_KEY, CTXMENU_GUID_STR,
                    L"ADS Explorer Context Menu Handler");
+    r |= SetString(HKEY_LOCAL_MACHINE, APPROVED_KEY, PROPSHEET_GUID_STR,
+                   L"ADS Explorer Property Sheet Handler");
 
     // Tell the shell that icons and associations changed
     SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
@@ -71,14 +86,18 @@ HRESULT RegisterServer() {
 HRESULT UnregisterServer() {
     RegDeleteTreeW(HKEY_CLASSES_ROOT, L"CLSID\\" OVERLAY_GUID_STR);
     RegDeleteTreeW(HKEY_CLASSES_ROOT, L"CLSID\\" CTXMENU_GUID_STR);
+    RegDeleteTreeW(HKEY_CLASSES_ROOT, L"CLSID\\" PROPSHEET_GUID_STR);
     RegDeleteTreeW(HKEY_LOCAL_MACHINE, OVERLAY_REG_KEY);
     RegDeleteTreeW(HKEY_CLASSES_ROOT, L"*\\shellex\\ContextMenuHandlers\\ADSExplorer");
     RegDeleteTreeW(HKEY_CLASSES_ROOT, L"Directory\\shellex\\ContextMenuHandlers\\ADSExplorer");
+    RegDeleteTreeW(HKEY_CLASSES_ROOT, L"*\\shellex\\PropertySheetHandlers\\ADSExplorer");
+    RegDeleteTreeW(HKEY_CLASSES_ROOT, L"Directory\\shellex\\PropertySheetHandlers\\ADSExplorer");
 
     HKEY hk = nullptr;
     if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, APPROVED_KEY, 0, KEY_SET_VALUE, &hk) == ERROR_SUCCESS) {
         RegDeleteValueW(hk, OVERLAY_GUID_STR);
         RegDeleteValueW(hk, CTXMENU_GUID_STR);
+        RegDeleteValueW(hk, PROPSHEET_GUID_STR);
         RegCloseKey(hk);
     }
 

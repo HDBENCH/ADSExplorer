@@ -76,6 +76,20 @@ BEGIN
     DEFPUSHBUTTON   "Close",IDOK,423,241,50,14
 END
 
+// "ADS" tab in the Properties dialog. 227x215 is the standard size of a shell
+// property page, and DS_SHELLFONT matches the font of the surrounding sheet;
+// a bigger page or a different font would stretch every other tab.
+IDD_ADSPAGE DIALOGEX 0, 0, 227, 215
+STYLE DS_SHELLFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "ADS"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Alternate data streams (ADS) attached to the selected file(s):",IDC_INFO,7,7,213,24
+    CONTROL         "",IDC_STREAMLIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,34,213,154
+    PUSHBUTTON      "Delete selected ADS",IDC_DELETE,7,194,90,14
+    RTEXT           "",IDC_VERSION,100,197,120,8,SS_NOPREFIX
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -83,8 +97,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,1,0
- PRODUCTVERSION 1,0,1,0
+ FILEVERSION 1,1,0,0
+ PRODUCTVERSION 1,1,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -101,12 +115,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "HDBENCH.NET"
             VALUE "FileDescription", "ADS Explorer Shell Extension"
-            VALUE "FileVersion", "1.0.1.0"
+            VALUE "FileVersion", "1.1.0.0"
             VALUE "InternalName", "ADSExplorer"
             VALUE "LegalCopyright", "(C)2026 HDBENCH.NET"
             VALUE "OriginalFilename", "ADSExplorer.dll"
             VALUE "ProductName", "ADS Explorer"
-            VALUE "ProductVersion", "1.0.1.0"
+            VALUE "ProductVersion", "1.1.0.0"
         END
     END
     BLOCK "VarFileInfo"

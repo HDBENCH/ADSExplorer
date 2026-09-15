@@ -11,6 +11,17 @@ static std::wstring ExtractStreamName(PCWSTR raw) {
     return std::wstring(p, static_cast<size_t>(colon - p));
 }
 
+bool AdsVolumeSupportsStreams(PCWSTR path) {
+    wchar_t root[MAX_PATH];
+    if (!GetVolumePathNameW(path, root, ARRAYSIZE(root))) return true;
+
+    DWORD flags = 0;
+    if (!GetVolumeInformationW(root, nullptr, 0, nullptr, nullptr, &flags, nullptr, 0)) {
+        return true;
+    }
+    return (flags & FILE_NAMED_STREAMS) != 0;
+}
+
 bool AdsFileHasStreams(PCWSTR path) {
     WIN32_FIND_STREAM_DATA fsd;
     HANDLE h = FindFirstStreamW(path, FindStreamInfoStandard, &fsd, 0);

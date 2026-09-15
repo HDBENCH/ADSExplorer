@@ -10,6 +10,8 @@ A Windows Explorer shell extension that reveals hidden
     listing each stream (name / size / content). You can also
     delete selected streams from that dialog. Ctrl/Shift-click
     selects several, Ctrl+A selects all.
+  - Right-click -> Properties has an "ADS" tab with the same
+    list and delete button.
 
 [How this differs from the MSI]
   This edition registers the DLL directly with regsvr32.

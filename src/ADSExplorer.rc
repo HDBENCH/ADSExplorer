@@ -64,18 +64,6 @@ IDI_OVERLAY             ICON                    "res\\overlay.ico"
 // Dialog
 //
 
-IDD_STREAMS DIALOGEX 0, 0, 480, 262
-STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Alternate Data Streams (ADS)"
-FONT 9, "Segoe UI", 400, 0, 0x1
-BEGIN
-    LTEXT           "Alternate data streams (ADS) attached to the selected file(s):",IDC_INFO,7,7,466,10
-    CONTROL         "",IDC_STREAMLIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,21,466,212
-    PUSHBUTTON      "Delete selected ADS",IDC_DELETE,7,241,120,14
-    RTEXT           "",IDC_VERSION,255,244,160,8,SS_NOPREFIX
-    DEFPUSHBUTTON   "Close",IDOK,423,241,50,14
-END
-
 // "ADS" tab in the Properties dialog. 227x215 is the standard size of a shell
 // property page, and DS_SHELLFONT matches the font of the surrounding sheet;
 // a bigger page or a different font would stretch every other tab.
@@ -97,8 +85,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,1,0,0
- PRODUCTVERSION 1,1,0,0
+ FILEVERSION 1,2,0,0
+ PRODUCTVERSION 1,2,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -115,12 +103,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "HDBENCH.NET"
             VALUE "FileDescription", "ADS Explorer Shell Extension"
-            VALUE "FileVersion", "1.1.0.0"
+            VALUE "FileVersion", "1.2.0.0"
             VALUE "InternalName", "ADSExplorer"
             VALUE "LegalCopyright", "(C)2026 HDBENCH.NET"
             VALUE "OriginalFilename", "ADSExplorer.dll"
             VALUE "ProductName", "ADS Explorer"
-            VALUE "ProductVersion", "1.1.0.0"
+            VALUE "ProductVersion", "1.2.0.0"
         END
     END
     BLOCK "VarFileInfo"

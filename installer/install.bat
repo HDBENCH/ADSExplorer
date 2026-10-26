@@ -75,7 +75,7 @@ echo.
 echo ============================================================
 echo  Installation complete.
 echo   - Files with alternate data streams show a skull overlay icon.
-echo   - Right-click a file to list its streams from the context menu.
+echo   - Right-click a file, open Properties and pick the "ADS" tab.
 echo.
 echo  Note: the DLL stays where it is now. Do not move or delete it
 echo  without running uninstall.bat first.

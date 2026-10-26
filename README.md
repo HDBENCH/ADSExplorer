@@ -5,8 +5,7 @@
 A C++ shell extension that reveals **NTFS Alternate Data Streams (ADS)** in Windows Explorer.
 
 - 🏷️ **Icon overlay** — files that have ADS get a purple skull badge on their icon
-- 🖱️ **Context menu** — right-click "Show ADS" opens a dialog listing each stream's name, size, and content, and lets you **delete** selected streams
-- 🗂️ **Properties tab** — the same list, with deletion, as an **"ADS" tab** in the Properties dialog of files and folders
+- 🗂️ **Properties tab** — an **"ADS" tab** in the Properties dialog of files and folders lists each stream's name, size and content, and lets you **delete** selected streams
 - 🌐 **Automatic Japanese / English UI** — the UI is localized based on the Windows display language
 - 📦 **MSI installer included** — English and Japanese UI in one package (registry entries managed declaratively by the MSI), plus a regsvr32-based manual-install zip for machines that cannot reboot
 
@@ -125,17 +124,15 @@ It exists for machines that cannot reboot, or for running temporarily off a USB 
 ## Usage
 
 1. After installing, files that have ADS show a skull badge on their icon in Explorer.
-2. Right-click a file (or folder) and choose **"Show ADS"** to open the list dialog.
-   - It shows four columns: **File / Stream / Size / Content**.
+2. Right-click a file (or folder), choose **Properties**, and open the **"ADS"** tab.
+   - It shows four columns: **File / Stream / Size / Content**. With a single file selected the File column is omitted.
    - Select a stream and click **"Delete selected ADS"** or press **Delete** to remove it (with confirmation; **this cannot be undone**). The file itself remains — only the selected named stream is deleted.
    - **Ctrl/Shift-click to select several**, or **Ctrl+A for all**, and delete them in one go. If some deletions fail the rest still proceed, and the failures are reported together at the end.
-   - Select multiple files before right-clicking to list them all at once.
-3. Right-click -> **Properties** also has an **"ADS" tab** with the same list and delete button.
-   - With a single file the File column is omitted.
    - Deletion takes effect immediately (after confirmation), not when you press OK / Apply.
+   - Select multiple files before opening Properties to list them all at once.
    - The tab is not added on volumes that cannot hold streams (FAT, exFAT, ...).
 
-> The UI (menu, dialog, confirmation messages) is shown in Japanese when the Windows display language is Japanese, and in English otherwise.
+> The UI (tab, list, confirmation messages) is shown in Japanese when the Windows display language is Japanese, and in English otherwise.
 
 ### Create / check an ADS for testing
 
@@ -167,12 +164,11 @@ Every file and registry entry is under Windows Installer control, so nothing is 
 
 ## How it works
 
-Three COM shell extensions are implemented in a single DLL.
+Two COM shell extensions are implemented in a single DLL.
 
 | Feature | Interface | Registered under |
 |---------|-----------|------------------|
 | Icon overlay | `IShellIconOverlayIdentifier` | `HKLM\...\Explorer\ShellIconOverlayIdentifiers` |
-| Context menu | `IShellExtInit` + `IContextMenu` | `HKCR\*\shellex\ContextMenuHandlers`, `HKCR\Directory\shellex\...` |
 | Properties tab | `IShellExtInit` + `IShellPropSheetExt` | `HKCR\*\shellex\PropertySheetHandlers`, `HKCR\Directory\shellex\...` |
 
 - ADS detection uses `FindFirstStreamW` / `FindNextStreamW`; if any stream other than the default `::$DATA` exists, the file is treated as having ADS.
@@ -196,11 +192,11 @@ Check with Registry Editor:
 HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ShellIconOverlayIdentifiers
 ```
 If there are more than 15 subkeys, the trailing ones are ignored. Removing unused overlays frees a slot for this extension.
-Note that the **"Show ADS" context menu always works regardless of this limit**.
+Note that the **"ADS" tab in the Properties dialog always works regardless of this limit**.
 
 ### 2. Explorer columns are not supported
 
-The old API for adding custom columns to arbitrary files, `IColumnProvider`, was **removed in Windows Vista** and does not work on Windows 10/11. The modern alternative (property handlers) is per-file-extension, so "an ADS column for all files" is technically impossible. Given this, the project uses a **right-click list dialog** and a **Properties tab** to show stream name, size, and content instead.
+The old API for adding custom columns to arbitrary files, `IColumnProvider`, was **removed in Windows Vista** and does not work on Windows 10/11. The modern alternative (property handlers) is per-file-extension, so "an ADS column for all files" is technically impossible. Given this, the project uses an **"ADS" tab in the Properties dialog** to show stream name, size, and content instead.
 
 ### 3. Performance
 
@@ -234,10 +230,9 @@ ADS/
 │   ├── AdsUtil.h / .cpp         ADS detection / enumeration / preview
 │   ├── ClassFactory.h / .cpp    IClassFactory
 │   ├── IconOverlay.h / .cpp     IShellIconOverlayIdentifier
-│   ├── ContextMenu.h / .cpp     IShellExtInit + IContextMenu
 │   ├── PropSheet.h / .cpp       IShellExtInit + IShellPropSheetExt ("ADS" tab)
 │   ├── Selection.h / .cpp       Selected paths from the shell data object
-│   ├── StreamDialog.h / .cpp    ADS list / delete (shared by dialog and tab)
+│   ├── StreamList.h / .cpp      ADS list / delete, hosted by the tab
 │   ├── Lang.h / Lang.cpp        UI language detection (Japanese / English)
 │   ├── Reg.h / .cpp             Register / unregister
 │   ├── dllmain.cpp              DllMain and COM entry points

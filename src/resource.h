@@ -5,7 +5,6 @@
 #pragma once
 
 #define IDI_OVERLAY     101
-#define IDD_STREAMS     201
 #define IDD_ADSPAGE     202
 #define IDC_INFO        1000
 #define IDC_STREAMLIST  1001

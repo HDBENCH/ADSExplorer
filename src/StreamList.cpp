@@ -1,4 +1,4 @@
-#include "StreamDialog.h"
+#include "StreamList.h"
 #include "AdsUtil.h"
 #include "DllShared.h"
 #include "Lang.h"
@@ -369,51 +369,4 @@ bool StreamList_OnNotify(HWND hDlg, StreamListState* state, LPARAM lParam) {
         return true;
     }
     return false;
-}
-
-static INT_PTR CALLBACK DlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
-    switch (msg) {
-    case WM_INITDIALOG: {
-        StreamListState* state = reinterpret_cast<StreamListState*>(lParam);
-        SetWindowLongPtrW(hDlg, DWLP_USER, reinterpret_cast<LONG_PTR>(state));
-
-        SetWindowTextW(hDlg, LStr(L"代替データストリーム (ADS)", L"Alternate Data Streams (ADS)"));
-        SetDlgItemTextW(hDlg, IDOK, LStr(L"閉じる", L"Close"));
-        if (state) StreamList_Init(hDlg, state);
-        return TRUE;
-    }
-    case WM_NOTIFY: {
-        StreamListState* state = reinterpret_cast<StreamListState*>(GetWindowLongPtrW(hDlg, DWLP_USER));
-        if (state && StreamList_OnNotify(hDlg, state, lParam)) return TRUE;
-        break;
-    }
-    case WM_COMMAND:
-        switch (LOWORD(wParam)) {
-        case IDC_DELETE: {
-            StreamListState* state = reinterpret_cast<StreamListState*>(GetWindowLongPtrW(hDlg, DWLP_USER));
-            if (state) StreamList_DeleteSelected(hDlg, state);
-            return TRUE;
-        }
-        case IDOK:
-        case IDCANCEL:
-            EndDialog(hDlg, LOWORD(wParam));
-            return TRUE;
-        }
-        break;
-    case WM_CLOSE:
-        EndDialog(hDlg, IDCANCEL);
-        return TRUE;
-    }
-    return FALSE;
-}
-
-void ShowStreamDialog(HWND parent, const std::vector<std::wstring>& files) {
-    INITCOMMONCONTROLSEX icc = { sizeof(icc), ICC_LISTVIEW_CLASSES | ICC_STANDARD_CLASSES };
-    InitCommonControlsEx(&icc);
-
-    StreamListState state;
-    state.files = files;
-    state.showFileColumn = true;   // The dialog always names the file on each row
-    DialogBoxParamW(g_hModule, MAKEINTRESOURCEW(IDD_STREAMS), parent, DlgProc,
-                    reinterpret_cast<LPARAM>(&state));
 }

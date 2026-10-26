@@ -5,6 +5,6 @@
 #include <vector>
 
 // Read the file system paths out of the CF_HDROP data object that Explorer
-// passes to IShellExtInit::Initialize. Shared by the context menu and the
-// property sheet handler. Returns S_OK only if at least one path came out.
+// passes to IShellExtInit::Initialize. Returns S_OK only if at least one
+// path came out.
 HRESULT GetSelectedPaths(IDataObject* pdtobj, std::vector<std::wstring>& paths);

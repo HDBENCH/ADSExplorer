@@ -13,6 +13,24 @@
 #define APPROVED_KEY \
     L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Approved"
 
+// The "Show ADS" context menu handler shipped up to 1.1.0 and has been
+// replaced by the property sheet page. Its entries are deleted rather than
+// left in place: registering over an older manual install would otherwise
+// leave a handler pointing at a CLSID this DLL no longer serves.
+#define LEGACY_CTXMENU_GUID_STR L"{C4E1D9B2-7A38-4F6C-9E52-1B0D3A8F6C29}"
+
+static void RemoveLegacyContextMenu() {
+    RegDeleteTreeW(HKEY_CLASSES_ROOT, L"CLSID\\" LEGACY_CTXMENU_GUID_STR);
+    RegDeleteTreeW(HKEY_CLASSES_ROOT, L"*\\shellex\\ContextMenuHandlers\\ADSExplorer");
+    RegDeleteTreeW(HKEY_CLASSES_ROOT, L"Directory\\shellex\\ContextMenuHandlers\\ADSExplorer");
+
+    HKEY hk = nullptr;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, APPROVED_KEY, 0, KEY_SET_VALUE, &hk) == ERROR_SUCCESS) {
+        RegDeleteValueW(hk, LEGACY_CTXMENU_GUID_STR);
+        RegCloseKey(hk);
+    }
+}
+
 // Write a string value, creating the key if needed.
 // Pass valueName == nullptr for the key default value.
 static LONG SetString(HKEY root, PCWSTR subkey, PCWSTR valueName, PCWSTR data) {
@@ -40,13 +58,6 @@ HRESULT RegisterServer() {
     r |= SetString(HKEY_CLASSES_ROOT, L"CLSID\\" OVERLAY_GUID_STR L"\\InprocServer32",
                    L"ThreadingModel", L"Apartment");
 
-    // --- CLSID: context menu handler ---
-    r |= SetString(HKEY_CLASSES_ROOT, L"CLSID\\" CTXMENU_GUID_STR, nullptr,
-                   L"ADS Explorer Context Menu Handler");
-    r |= SetString(HKEY_CLASSES_ROOT, L"CLSID\\" CTXMENU_GUID_STR L"\\InprocServer32", nullptr, dll);
-    r |= SetString(HKEY_CLASSES_ROOT, L"CLSID\\" CTXMENU_GUID_STR L"\\InprocServer32",
-                   L"ThreadingModel", L"Apartment");
-
     // --- CLSID: property sheet handler ---
     r |= SetString(HKEY_CLASSES_ROOT, L"CLSID\\" PROPSHEET_GUID_STR, nullptr,
                    L"ADS Explorer Property Sheet Handler");
@@ -57,12 +68,6 @@ HRESULT RegisterServer() {
     // --- Icon overlay registration (HKLM) ---
     r |= SetString(HKEY_LOCAL_MACHINE, OVERLAY_REG_KEY, nullptr, OVERLAY_GUID_STR);
 
-    // --- Context menu registration (all files + folders) ---
-    r |= SetString(HKEY_CLASSES_ROOT, L"*\\shellex\\ContextMenuHandlers\\ADSExplorer",
-                   nullptr, CTXMENU_GUID_STR);
-    r |= SetString(HKEY_CLASSES_ROOT, L"Directory\\shellex\\ContextMenuHandlers\\ADSExplorer",
-                   nullptr, CTXMENU_GUID_STR);
-
     // --- Property sheet registration (all files + folders) ---
     r |= SetString(HKEY_CLASSES_ROOT, L"*\\shellex\\PropertySheetHandlers\\ADSExplorer",
                    nullptr, PROPSHEET_GUID_STR);
@@ -72,10 +77,10 @@ HRESULT RegisterServer() {
     // --- Approved shell extensions list ---
     r |= SetString(HKEY_LOCAL_MACHINE, APPROVED_KEY, OVERLAY_GUID_STR,
                    L"ADS Explorer Icon Overlay Handler");
-    r |= SetString(HKEY_LOCAL_MACHINE, APPROVED_KEY, CTXMENU_GUID_STR,
-                   L"ADS Explorer Context Menu Handler");
     r |= SetString(HKEY_LOCAL_MACHINE, APPROVED_KEY, PROPSHEET_GUID_STR,
                    L"ADS Explorer Property Sheet Handler");
+
+    RemoveLegacyContextMenu();
 
     // Tell the shell that icons and associations changed
     SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
@@ -85,21 +90,19 @@ HRESULT RegisterServer() {
 
 HRESULT UnregisterServer() {
     RegDeleteTreeW(HKEY_CLASSES_ROOT, L"CLSID\\" OVERLAY_GUID_STR);
-    RegDeleteTreeW(HKEY_CLASSES_ROOT, L"CLSID\\" CTXMENU_GUID_STR);
     RegDeleteTreeW(HKEY_CLASSES_ROOT, L"CLSID\\" PROPSHEET_GUID_STR);
     RegDeleteTreeW(HKEY_LOCAL_MACHINE, OVERLAY_REG_KEY);
-    RegDeleteTreeW(HKEY_CLASSES_ROOT, L"*\\shellex\\ContextMenuHandlers\\ADSExplorer");
-    RegDeleteTreeW(HKEY_CLASSES_ROOT, L"Directory\\shellex\\ContextMenuHandlers\\ADSExplorer");
     RegDeleteTreeW(HKEY_CLASSES_ROOT, L"*\\shellex\\PropertySheetHandlers\\ADSExplorer");
     RegDeleteTreeW(HKEY_CLASSES_ROOT, L"Directory\\shellex\\PropertySheetHandlers\\ADSExplorer");
 
     HKEY hk = nullptr;
     if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, APPROVED_KEY, 0, KEY_SET_VALUE, &hk) == ERROR_SUCCESS) {
         RegDeleteValueW(hk, OVERLAY_GUID_STR);
-        RegDeleteValueW(hk, CTXMENU_GUID_STR);
         RegDeleteValueW(hk, PROPSHEET_GUID_STR);
         RegCloseKey(hk);
     }
+
+    RemoveLegacyContextMenu();
 
     SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
     // Failing to delete a key that is already gone is fine

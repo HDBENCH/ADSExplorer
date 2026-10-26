@@ -5,12 +5,10 @@ ADS Explorer  -  NTFS Alternate Data Streams (ADS) viewer
 A Windows Explorer shell extension that reveals hidden
 "alternate data streams (ADS)" on files.
   - Files that have ADS get a purple skull overlay icon.
-  - Right-click a file and choose "Show ADS" to open a dialog
-    listing each stream (name / size / content). You can also
-    delete selected streams from that dialog. Ctrl/Shift-click
+  - Right-click a file, choose Properties and open the "ADS"
+    tab to list each stream (name / size / content). You can
+    also delete selected streams there. Ctrl/Shift-click
     selects several, Ctrl+A selects all.
-  - Right-click -> Properties has an "ADS" tab with the same
-    list and delete button.
 
 [Install]
   Double-click ADSExplorer-@VERSION@.msi and follow the wizard.
@@ -44,7 +42,7 @@ A Windows Explorer shell extension that reveals hidden
 [If the overlay icon does not appear]
   - Windows allows only 15 icon-overlay handlers system-wide.
     If OneDrive or TortoiseGit/SVN use up the slots, the skull
-    may not show. The right-click "Show ADS" menu always works.
+    may not show. The "ADS" tab in Properties always works.
   - Changes take effect after restarting Explorer or signing out/in.
 
 ---------------------------------------------------------

@@ -80,7 +80,6 @@
   <ItemGroup>
     <ClCompile Include="AdsUtil.cpp" />
     <ClCompile Include="ClassFactory.cpp" />
-    <ClCompile Include="ContextMenu.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Guids.cpp" />
     <ClCompile Include="IconOverlay.cpp" />
@@ -88,12 +87,11 @@
     <ClCompile Include="PropSheet.cpp" />
     <ClCompile Include="Reg.cpp" />
     <ClCompile Include="Selection.cpp" />
-    <ClCompile Include="StreamDialog.cpp" />
+    <ClCompile Include="StreamList.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdsUtil.h" />
     <ClInclude Include="ClassFactory.h" />
-    <ClInclude Include="ContextMenu.h" />
     <ClInclude Include="DllShared.h" />
     <ClInclude Include="Guids.h" />
     <ClInclude Include="IconOverlay.h" />
@@ -102,7 +100,7 @@
     <ClInclude Include="Reg.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Selection.h" />
-    <ClInclude Include="StreamDialog.h" />
+    <ClInclude Include="StreamList.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ADSExplorer.rc" />

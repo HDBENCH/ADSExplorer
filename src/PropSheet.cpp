@@ -2,7 +2,7 @@
 #include "AdsUtil.h"
 #include "DllShared.h"
 #include "Selection.h"
-#include "StreamDialog.h"
+#include "StreamList.h"
 #include "resource.h"
 #include <commctrl.h>
 #include <new>

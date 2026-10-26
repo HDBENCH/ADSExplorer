@@ -15,7 +15,7 @@
 
   <String Id="FeatureMainTitle" Value="ADS Explorer シェル拡張" />
   <String Id="FeatureMainDescription"
-          Value="代替データストリームを持つファイルにオーバーレイアイコンを表示し、右クリックメニューに「ADS を表示」を追加します。" />
+          Value="代替データストリームを持つファイルにオーバーレイアイコンを表示し、プロパティに「ADS」タブを追加します。" />
 
   <String Id="DowngradeError"
           Value="より新しいバージョンの ADS Explorer が既にインストールされています。セットアップを終了します。" />

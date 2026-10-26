@@ -24,7 +24,6 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, void** ppv) {
     *ppv = nullptr;
 
     if (IsEqualCLSID(rclsid, CLSID_AdsIconOverlay) ||
-        IsEqualCLSID(rclsid, CLSID_AdsContextMenu) ||
         IsEqualCLSID(rclsid, CLSID_AdsPropSheet)) {
         CClassFactory* factory = new (std::nothrow) CClassFactory(rclsid);
         if (!factory) return E_OUTOFMEMORY;

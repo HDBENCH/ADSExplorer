@@ -15,7 +15,7 @@
 
   <String Id="FeatureMainTitle" Value="ADS Explorer shell extension" />
   <String Id="FeatureMainDescription"
-          Value="Explorer overlay icon and &quot;Show ADS&quot; context menu for files with alternate data streams." />
+          Value="Explorer overlay icon and an &quot;ADS&quot; Properties tab for files with alternate data streams." />
 
   <String Id="DowngradeError"
           Value="A newer version of ADS Explorer is already installed. Setup will now exit." />
